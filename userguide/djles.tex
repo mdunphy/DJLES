@@ -1,0 +1,166 @@
+\documentclass[letterpaper]{article}
+\usepackage{amsmath} 
+\usepackage{fullpage}
+\usepackage{hyperref}
+\usepackage{natbib}
+\usepackage{textcomp}
+
+\newcommand{\deriv}[2]{\frac{\mathrm{d}#1}{\mathrm{d}#2}}
+
+\begin{document}
+\newpage
+\pagestyle{plain}
+\setcounter{page}{1}
+
+\begin{center}
+\huge{DJLES: Dubreil-Jacotin-Long Equation Solver}\\[1em]
+\large{May 16, 2015}\\
+Michael Dunphy
+\end{center}
+
+\section{Introduction}
+DJLES is a MATLAB package that finds a mode-one solution to the DJL equation. \cite{StastnaLamb2002} describe the problem setup, weakly nonlinear theory, fully nonlinear theory, and iterative solution procedure. DJLES was inspired by \verb+soliw+, a DJL solving C package resulting from the work of \cite{StastnaLamb2002}.
+
+DJLES differs from \verb+soliw+ by being MATLAB based, which avoids the need to compile C code and import the resulting raw binary files into MATLAB. It also takes advantage of MATLAB's built in parallelisation of FFTs which accelerates solution on multi-core computers. Lastly, it easily employs the resolution refinement approach of \cite{DunphySubichStastna2011}, a feature not available in \verb+soliw+
+
+If you find this code useful, please cite \cite{DunphySubichStastna2011} as it will encourage the author to maintain/improve DJLES. Bug reports, fixes/improvements and additional case files are welcome; please send them to \href{mailto:mdunphy@uwaterloo.ca}{mdunphy@uwaterloo.ca} for inclusion in a future version.
+
+DLJES has benefited from contributions from Marek Stastna, Kevin Lamb, Chris Subich and Derek Steinmoeller.
+
+The remainder of this document is a user guide for the code.
+
+\section{Usage}
+Typical usage is to set problem parameters, then call \verb+djles_refine_solution+ to solve the DJL equation, which returns the isopycnal displacement field $\eta$ and wave speed $c$ in MATLAB variables \verb+eta+ and \verb+c+, respectively. The ten required problem parameters are:
+\begin{itemize}
+ \item $A$ - Target available potential energy (m$^4$/s$^2$)
+ \item $L$ and $H$ - Domain length and depth (m)
+ \item $N_x$ and $N_z$ - Number of grid points in $x$ and $z$
+ \item $\bar{\rho}(z)$ and $\deriv{}{z} \bar{\rho}(z)$
+       - Background density profile (unitless: normalized by $\rho_0$) and first derivative
+  \item $U_{bg}(z)$, $\deriv{}{z} U_{bg}(z)$, and $\deriv{^2}{z^2} U_{bg}(z)$
+       - Background velocity profile (m/s) and first two derivatives
+\end{itemize}
+If a background velocity is not desired, set it to zero (see test cases). 
+Once the solution is complete, \verb+djles_diagnostics+ computes the associated velocity fields, vorticity, etc., and \verb+djles_plot+ produces a simple plot of these fields.
+
+During the first call to \verb+djles_refine_solution+, we use weakly nonlinear theory to find an initial guess for the solution, which is then iterated to convergence. Subsequent calls to \verb+djles_refine_solution+ use the previous fully nonlinear solution as the initial guess. This allows for the strategy of successively adjusting parameters (resolution, wave APE, etc) to ease/accelerate finding a solution. The various test cases demonstrate several solution scenarios.
+
+\subsection{Tuning knobs}
+There are a few tuning knobs. Set them in the case file to override the default.
+\begin{itemize}
+ \item \verb+min_iterate+ specifies the minimum number of iterations that the solver will take, default is 10.
+ \item \verb+max_iterate+ specifies the maximum number of iterations that the solver will take, default is 2000. If you use a very small \verb+epsilon+ you may need to increase this. 
+ \item \verb+NL+ is the number of Legendre points to use for the Gauss quadrature used for the APE integral. Values below 5 are probably too small, values in 15-25 are quite good, and values higher than 25 are likely unnecessary. Default is 20.
+ \item \verb+g+ is the gravitational acceleration constant, default value is 9.81 m/s$^2$.
+ \item \verb+verbose+ is a switch that enables printing the progress as the iterations proceed. Setting to 0 disables printing, and to 1 enabled printing. Default is 1.
+\item \verb+epsilon+ controls the stop condition, which is the relative difference between successive iterations (roughly taken as number of decimal places correct). Default $1\times10^{-4}$. Smaller values will require more solver iterations.
+\end{itemize}
+
+\subsection{Compatibility notes}
+\begin{itemize}
+ \item Works with MATLAB versions: R2013a (Linux 64-bit), R2012a (OSX 10.6.8)
+ \item Works with Octave v3.8.1 (Linux 64-bit).
+ \item The initial guess part uses \verb+polyeig.m+, and Octave added it in v3.8.0, so it's unlikely to work with Octave older than v3.8.0.
+\end{itemize}
+
+\subsection{Numerical Grid}
+The domain is the rectangular region $[0,L] \times [-H,0]$ and is discretized into $N_x\times N_z$ grid boxes. The boundary conditions for the problem are zero, so we use the cell centres for the coordinates, that is,
+\begin{align}
+x_i &= \frac{\Delta x}{2}  + i \Delta x, \quad i \in 0,1,2,\hdots,N_x-1,\\
+z_j &= -H + \frac{\Delta z}{2}  + j \Delta z, \quad j  \in 0,1,2,\hdots,N_z-1,
+\end{align}
+where $(\Delta x, \Delta z) = (L/N_x, H/N_z)$. The grid shifting routine \verb+djles_shift_grid.m+ shifts the data from the cell centres to cell edges, 
+\begin{align}
+x_i &= i \Delta x, \quad i \in 0,1,2,...,N_x\\
+z_j &= -H + j \Delta z, \quad j  \in 0,1,2,...,N_z.
+\end{align}
+The array sizes are $N_x+1 \times N_z+1$ on the cell edges grid.
+
+\section{Description of M-files}
+The code consists of a handful of functions, scripts, and tests cases.
+
+\subsection{Scripts}
+The scripts are
+\begin{verbatim}
+Filename                  - Description
+-----------------------------------------------------------------------------------------
+djles_common.m            - Sets default parameters and generates grid and wavenumbers.
+djles_diagnostics.m       - Computes wave velocities, vorticity, etc from eta and c
+djles_initial_guess.m     - Used by djles_refine_solution.m to get an initial guess for
+                            eta & c from WNL theory if an initial guess is not provided.
+djles_plot.m              - Plots the solution and some diagnostics
+djles_refine_solution.m   - This is the main m-file that each case files calls. It
+                            performs the iterative procedure to find a wave solution.
+\end{verbatim}
+
+\subsection{Helper Functions}
+The helper functions are
+\begin{verbatim}
+djles_compute_apedens.m   - Computes the available potential energy density.
+djles_diffmatrix.m        - Generates a finite difference differentiation matrix for use
+                            in differentiating data.
+djles_gradient.m          - Computes the gradient of a scalar function.
+djles_residual.m          - Computes the residual in the DJL equation.
+djles_raise_resolution.m  - Increases the resolution of the solution.
+djles_shift_grid.m        - Shifts the eta solution from cell-centred grid to a cell
+                            edge grid. Increases the matrix size by 1 in each dimension.
+djles_sinequadrature.m    - Computed the interior grid sine quadrature weights for
+                            area integrals.
+\end{verbatim}
+
+\subsection{Test cases}
+Included are six test cases that demonstrate how to use DJLES. A brief description of each follows.
+
+\subsubsection{Small APE}
+Test case: \verb"case_small_ape.m" \\\\
+This test case demonstrates the parameter regime of no background current, a smooth pycnocline, and small wave APE.
+The initial guess obtained from weakly nonlinear theory will be ``close'' to the fully nonlinear DJL solution, so the solver readily converges.
+Once we find the low resolution wave (32x32), we increase the resolution to 512x256 and iterate to convergence.
+The low resolution solution is a very good initial guess for the high resolution problem, so the high resolution wave is also readily solved.
+
+\subsubsection{Large APE}
+Test case: \verb"case_large_ape.m" \\\\
+This test case demonstrates the parameter regime of no background current, a smooth pycnocline, and large wave APE.
+The initial guess from weakly nonlinear theory will be rather poor. 
+The solution strategy we use is to find a wave with a small APE, and supply that wave as the initial guess to find a wave with a larger APE.
+Applying this several times yields the final wave with a large APE.
+In this case we start at one percent of the target APE and raise the APE in five steps.
+Lastly, we increase the resolution once we reach the target APE.
+The result is a broad flat crested wave.
+
+\subsubsection{Background Current}
+Test case: \verb"case_ubg.m" \\\\
+The weakly nonlinear theory does not include a background current, and thus produces a mediocre initial guess.
+However, the same successive solution strategy is useful here.
+We solve without a background current first, and then successively raise the background current strength until we reach the full background current.
+We increase epsilon for the intermediate solutions to accelerate the process as we only need them to be of ``initial guess'' precision.
+Lastly, we reduce epsilon, and increase the resolution in two increments.
+
+\subsubsection{Sharp Pycnocline}
+Test case: \verb"case_sharp_pycnocline.m" \\\\
+Obtaining a solution with a sharp pycnocline can be difficult for the solver to find directly, and the successive solution strategy works here as well.
+We begin with a low-resolution wide-pycnocline that is readily solved and begin successively reducing the pycnocline thickness.
+As we sharpen the pycnocline, we also increase the resolution such that the pycnocline is not under-resolved.
+
+\subsubsection{Synthetic Data}
+Test case: \verb"case_synthetic_data.m" \\\\
+This case matches the parameters of the background current case, except that we use synthetic mooring data as the background profiles.
+We sample the analytic functions at 25 evenly spaced points and construct continuous profiles using linear interpolating polynomials.
+Second order differentiation provides the gradients, which are linearly interpolated in the same fashion.
+The \verb+linear+ and \verb+pchip+ interpolation methods preserve monotonocity which is important to ensure the interpolated density profile is stable.
+The \verb+spline+ method does not preserve monotonicity so be careful if you use it.
+As in \verb"case_ubg.m", we raise the background velocity in a four successive steps, followed by a three resolution refinements.
+
+\subsubsection{Real Data}
+Test case: \verb"case_realdata.m" \&  \verb"case_realdata.txt" \\\\
+Here we use time-averaged temperature profile data collected from Lake Erie (K. Lamb 2014, pers. comm.). 
+The text file contains two columns, depth (m) and temperature (\textdegree C), and we convert the temperature to density with a linear equation of state.
+There is no surface value so we extrapolate to find a value for $z=0$.
+We construct the density and density gradient in the same fashion as in the synthetic data case, and use no background current.
+We solve the wave at low resolution and then raise the resolution in two steps.
+
+% References
+\bibliographystyle{kbib}
+\bibliography{djles}
+
+\end{document}
