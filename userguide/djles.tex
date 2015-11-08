@@ -14,7 +14,7 @@
 
 \begin{center}
 \huge{DJLES: Dubreil-Jacotin-Long Equation Solver}\\[1em]
-\large{May 16, 2015}\\
+\large{Nov 02, 2015}\\
 Michael Dunphy
 \end{center}
 
@@ -49,30 +49,48 @@ During the first call to \verb+djles_refine_solution+, we use weakly nonlinear t
 There are a few tuning knobs. Set them in the case file to override the default.
 \begin{itemize}
  \item \verb+min_iterate+ specifies the minimum number of iterations that the solver will take, default is 10.
- \item \verb+max_iterate+ specifies the maximum number of iterations that the solver will take, default is 2000. If you use a very small \verb+epsilon+ you may need to increase this. 
+ \item \verb+max_iterate+ specifies the maximum number of iterations that the solver will take, default is 2000. If you use a very small \verb+epsilon+ or \verb+relax+ you may need to increase this. 
  \item \verb+NL+ is the number of Legendre points to use for the Gauss quadrature used for the APE integral. Values below 5 are probably too small, values in 15-25 are quite good, and values higher than 25 are likely unnecessary. Default is 20.
+ \item \verb+relax+ is the underrelaxation factor, $0 < \verb+relax+ <= 1$.
+        The value is the fraction of the new iteration, $\eta^{k*}$ to retain
+        after performing an interation, that is,
+        $\eta^k = \eta^{k-1} + \verb+relax+(\eta^{k*} - \eta^{k-1})$.
+        The default of 0.5 works well in most cases, and a value of 1 disables underrelaxation.
+        Using a small value can help stabilise the solver at the expense of needing more iterations.
  \item \verb+g+ is the gravitational acceleration constant, default value is 9.81 m/s$^2$.
  \item \verb+verbose+ is a switch that enables printing the progress as the iterations proceed. Setting to 0 disables printing, and to 1 enabled printing. Default is 1.
-\item \verb+epsilon+ controls the stop condition, which is the relative difference between successive iterations (roughly taken as number of decimal places correct). Default $1\times10^{-4}$. Smaller values will require more solver iterations.
+\item \verb+epsilon+ controls the stop condition, which is the relative difference between successive iterations. Default $1\times10^{-4}$. Smaller values will require more solver iterations.
 \end{itemize}
+
+\subsection{Miscellaneous}
+
+A successful solve will have a relative error of roughly \verb+epsilon+/\verb+relax+ decimal placesin $\eta$. Using a small value of \verb+relax+ should be accompanied with a reduction in \verb+epsilon+.
+
+If the solver fails to converge, 
+\begin{enumerate}
+ \item Ensure that your density profile $\rho(z)$ is stably stratified.
+ \item Run the solver with a small underrelaxation factor. A value of 0.1 or even 0.01 may suppress oscillations and stabilise the solver. 
+ \item Ensure that your density profile (and stratification profile) is smooth.
+\end{enumerate}
 
 \subsection{Compatibility notes}
 \begin{itemize}
- \item Works with MATLAB versions: R2013a (Linux 64-bit), R2012a (OSX 10.6.8)
+ \item Works with MATLAB versions: R2013a (Linux 64-bit and Windows), R2012a (OSX 10.6.8)
  \item Works with Octave v3.8.1 (Linux 64-bit).
  \item The initial guess part uses \verb+polyeig.m+, and Octave added it in v3.8.0, so it's unlikely to work with Octave older than v3.8.0.
+ \item MATLAB R2014a prints warnings about deprecating \verb+ppval+, you can suppress the warnings with \\ \verb+warning('off','MATLAB:interp1:ppGriddedInterpolant');+
 \end{itemize}
 
 \subsection{Numerical Grid}
 The domain is the rectangular region $[0,L] \times [-H,0]$ and is discretized into $N_x\times N_z$ grid boxes. The boundary conditions for the problem are zero, so we use the cell centres for the coordinates, that is,
 \begin{align}
-x_i &= \frac{\Delta x}{2}  + i \Delta x, \quad i \in 0,1,2,\hdots,N_x-1,\\
-z_j &= -H + \frac{\Delta z}{2}  + j \Delta z, \quad j  \in 0,1,2,\hdots,N_z-1,
+x_i^c &= \frac{\Delta x}{2}  + i \Delta x, \quad i \in 0,1,2,\hdots,N_x-1,\\
+z_j^c &= -H + \frac{\Delta z}{2}  + j \Delta z, \quad j  \in 0,1,2,\hdots,N_z-1,
 \end{align}
 where $(\Delta x, \Delta z) = (L/N_x, H/N_z)$. The grid shifting routine \verb+djles_shift_grid.m+ shifts the data from the cell centres to cell edges, 
 \begin{align}
-x_i &= i \Delta x, \quad i \in 0,1,2,...,N_x\\
-z_j &= -H + j \Delta z, \quad j  \in 0,1,2,...,N_z.
+x_i^e &= i \Delta x, \quad i \in 0,1,2,...,N_x\\
+z_j^e &= -H + j \Delta z, \quad j  \in 0,1,2,...,N_z.
 \end{align}
 The array sizes are $N_x+1 \times N_z+1$ on the cell edges grid.
 
