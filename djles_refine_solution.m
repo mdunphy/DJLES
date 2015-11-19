@@ -22,17 +22,16 @@ c0      = c;
 lambda0 = g*H/(c0*c0);
 
 if (verbose)
-    maxeta  = max((eta0(:)));
-    mineta  = min((eta0(:)));
-    fprintf('Initial guess: maxeta = %1.6e,   mineta = %1.6e\n',maxeta,mineta);
-    fprintf('               lambda =  %.6e,      c   =  %.6e\n',lambda0,c0);
+    [~,idx]    = max(abs(eta0(:)));
+    wave_ampl0 = eta0(idx);
+    fprintf('Initial guess:\n wave ampl = %+.10e,   c = %+.10e\n\n',wave_ampl0,c0);
 end
 
 flag = 1; iteration = 0;
 while (flag)
     iteration = iteration + 1;
     S = -rhoz(ZC-eta0).*eta0/H; % compute S (DSS2011 Eq 19)
-    
+
     % Compute R, assemble RHS
     if (uflag)
         [eta0x, eta0z] = djles_gradient(eta0, ks, ms, 'odd', 'interior');
@@ -43,14 +42,14 @@ while (flag)
     else
         rhs = - lambda0 * S;  % RHS of (DSS2011 Eq 18)
     end
-    
+
     % Solve the linear Poisson problem (DSS2011 Eq 18)
     t0 = clock;
     temp = [rhs -flipdim(rhs,2); -flipdim(rhs,1) rot90(rhs,2)];
     temp = real(ifft2(INVLAP.*fft2(temp)));
     nu = temp(1:NZ, 1:NX);
     t.solve = t.solve + etime(clock, t0);
-    
+
     % Find the APE (DSS2011 Eq 21 & 22)
     t0 = clock;
     apedens = djles_compute_apedens(rho, eta0, ZC, g, wl, zl);
@@ -59,10 +58,10 @@ while (flag)
     S1 = g*sum( wsine(:).*S(:).*nu(:)   );
     S2 = g*sum( wsine(:).*S(:).*eta0(:) );
     t.int = t.int + etime(clock, t0);
-    
+
     % Find new lambda (DSS2011 Eq 20)
     lambda = lambda0*(A-F+S2)/S1;
-    
+
     % check if lambda is OK
     if (lambda < 0)
         fprintf('new lambda has wrong sign --> nonconvergence of iterative procedure\n');
@@ -73,41 +72,38 @@ while (flag)
         end
         break;
     end
-    
+
     % Compute new c, eta
     c   = sqrt(g*H/lambda); % DSS2011 Eq 24
     eta = (lambda/lambda0)*nu; % (DSS2011 Eq 23)
-    
+
     % Apply underrelaxation factor
     eta = (1-relax)*eta0 + relax*eta;
-    
-    % Compute maximum difference from previous eta
-    max_diff = max(abs(eta(:)-eta0(:)));
-    mineta   = min((eta(:)));
-    maxeta   = max((eta(:)));
-    
-    % Compute relative difference
-    reldiff = max_diff/max(abs([mineta maxeta]));
-    
+
+    % Find wave amplitude
+    [~,idx]   = max(abs(eta(:)));
+    wave_ampl = eta(idx);
+
+    % Compute relative difference between present and previous iteration
+    reldiff = max(abs(eta(:)-eta0(:))) / abs(wave_ampl);
+
     % Report on state of the operation
     if (verbose)
         fprintf('Iteration %4d:\n',iteration);
-        fprintf(' mineta  = %+.10e, maxeta  = %+.10e\n',mineta,maxeta);
-        fprintf(' lambda  = %+.10e,      c  = %+.10e\n',lambda,c);
-        fprintf(' A       = %+.10e,       F = %+.10e\n',A,F);
-        fprintf(' S1      = %+.10e,      S2 = %+.10e\n',S1,S2);
-        fprintf(' reldiff = %+.10e\n\n',reldiff);
+        fprintf(' wave ampl = %+.10e,   c = %+.10e\n',wave_ampl,c);
+        fprintf(' A         = %+.10e,   F = %+.10e\n',A,F);
+        fprintf(' reldiff   = %+.10e\n\n',reldiff);
     end
-    
+
     % Stop conditions
     if (iteration >= min_iteration) && (reldiff < epsilon)
         flag = 0;
     end
     if (iteration >= max_iteration)
         flag = 0;
-        fprintf('Reached maximum number of interactions (%d >= %d)\n',iteration,max_iteration);
+        fprintf('Reached maximum number of iterations (%d >= %d)\n',iteration,max_iteration);
     end
-    
+
     % Iteration shift
     lambda0 = lambda;
     c0      = c;
@@ -122,8 +118,8 @@ if (verbose)
     fprintf('Total:              %6.2f seconds\n', t.total);
 end
 
+
+fprintf('Finished [NX,NZ]=[%3dx%3d], A=%g, c=%g m/s, wave amplitude=%g m\n',NX,NZ,A,c,wave_ampl);
+
 % Cleanup unneeded variables (comment these lines for debugging)
-clear uflag S uhat R rhs temp nu apedens F S1 S2 flag
-
-fprintf('Finished [NX,NZ]=[%3dx%3d], A=%1.10e, c=%1.10e\n',NX,NZ,A,c);
-
+clear uflag S uhat R rhs temp nu apedens F S1 S2 flag idx
