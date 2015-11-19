@@ -106,5 +106,5 @@ while (flag>0)
 end
 
 % Cleanup unneeded variables (comment these lines for debugging)
-clear Dz Dzz Dzzc tmpz n2vec uvec uzzvec N2 U Uzz A0 A1 A2 V cc ii flag F
+clear Dz Dzz Dzzc tmpz n2vec uvec uzzvec N2 U Uzz A0 A1 A2 V cc ii flag F clw
 clear phi1 uvec E1 E1p E1p2 E1p3 bot r10 r01 E b0 lambda apedens afact eta0

@@ -17,19 +17,20 @@ uflag = any(Ubg(zc));
 % Raise the resolution if needed
 eta = djles_raise_resolution(eta,NX,NZ);
 
-eta0    = eta;
-c0      = c;
-lambda0 = g*H/(c0*c0);
-
 if (verbose)
-    [~,idx]    = max(abs(eta0(:)));
-    wave_ampl0 = eta0(idx);
-    fprintf('Initial guess:\n wave ampl = %+.10e,   c = %+.10e\n\n',wave_ampl0,c0);
+    [~,idx]   = max(abs(eta(:)));
+    wave_ampl = eta(idx);
+    fprintf('Initial guess:\n wave ampl = %+.10e,   c = %+.10e\n\n',wave_ampl,c);
 end
 
 flag = 1; iteration = 0;
 while (flag)
+    % Iteration shift
     iteration = iteration + 1;
+    eta0      = eta;
+    c0        = c;
+    lambda0   = g*H/(c*c);
+
     S = -rhoz(ZC-eta0).*eta0/H; % compute S (DSS2011 Eq 19)
 
     % Compute R, assemble RHS
@@ -103,23 +104,17 @@ while (flag)
         flag = 0;
         fprintf('Reached maximum number of iterations (%d >= %d)\n',iteration,max_iteration);
     end
-
-    % Iteration shift
-    lambda0 = lambda;
-    c0      = c;
-    eta0    = eta;
 end
 
 t.stop = clock; t.total = etime(t.stop, t.start);
 if (verbose)
     fprintf('Poisson solve time: %6.2f seconds\n', t.solve);
     fprintf('Integration time:   %6.2f seconds\n', t.int);
-    fprintf('Other time:         %6.2f seconds\n', t.total - t.solve -t.int);
+    fprintf('Other time:         %6.2f seconds\n', t.total - t.solve - t.int);
     fprintf('Total:              %6.2f seconds\n', t.total);
 end
-
 
 fprintf('Finished [NX,NZ]=[%3dx%3d], A=%g, c=%g m/s, wave amplitude=%g m\n',NX,NZ,A,c,wave_ampl);
 
 % Cleanup unneeded variables (comment these lines for debugging)
-clear uflag S uhat R rhs temp nu apedens F S1 S2 flag idx
+clear uflag S uhat R rhs temp nu apedens F S1 S2 flag idx uhatz eta0x eta0z t0 eta0 lambda0 c0
