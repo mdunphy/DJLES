@@ -53,7 +53,7 @@ There are a few tuning knobs. Set them in the case file to override the default.
  \item \verb+NL+ is the number of Legendre points to use for the Gauss quadrature used for the APE integral. Values below 5 are probably too small, values in 15-25 are quite good, and values higher than 25 are likely unnecessary. Default is 20.
  \item \verb+relax+ is the underrelaxation factor, $0 < \verb+relax+ <= 1$.
         The value is the fraction of the new iteration, $\eta^{k*}$ to retain
-        after performing an interation, that is,
+        after performing an iteration, that is,
         $\eta^k = \eta^{k-1} + \verb+relax+(\eta^{k*} - \eta^{k-1})$.
         The default of 0.5 works well in most cases, and a value of 1 disables underrelaxation.
         Using a small value can help stabilise the solver at the expense of needing more iterations.
@@ -64,7 +64,7 @@ There are a few tuning knobs. Set them in the case file to override the default.
 
 \subsection{Miscellaneous}
 
-A successful solve will have a relative error of roughly \verb+epsilon+/\verb+relax+ decimal placesin $\eta$. Using a small value of \verb+relax+ should be accompanied with a reduction in \verb+epsilon+.
+A successful solve will have a relative error of roughly \verb+epsilon+/\verb+relax+ decimal places in $\eta$. Using a small value of \verb+relax+ should be accompanied with a reduction in \verb+epsilon+.
 
 If the solver fails to converge, 
 \begin{enumerate}

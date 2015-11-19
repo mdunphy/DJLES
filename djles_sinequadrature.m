@@ -7,7 +7,7 @@ end
 
 function w=get1dweights(N)
 % Quadrature weights for integrating an odd periodic function over a
-% half period usng the interior grid. From John Boyd's Chebyshev and
+% half period using the interior grid. From John Boyd's Chebyshev and
 % Fourier Spectral Methods, 2nd Ed, Pg 568, Eq F.32.
 w=zeros(1,N);
 for j=1:N
