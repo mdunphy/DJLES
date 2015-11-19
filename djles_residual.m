@@ -4,11 +4,11 @@ function [residual, LHS, RHS] = djles_residual(ks, ms, eta, Ubg, Ubgz, rhoz, z, 
 % Odd extend the function in both directions
 switch gridtype
     case 'interior'
-        etatmp = cat(2, eta, -flipdim(eta,2));
-        etaextended = cat(1, etatmp, -flipdim(etatmp,1));
+        etatmp = cat(2, eta, -compat_flip(eta,2));
+        etaextended = cat(1, etatmp, -compat_flip(etatmp,1));
     case 'endpoint'
-        etatmp = cat(2, eta, -flipdim(eta(:,2:end-1),2));
-        etaextended = cat(1, etatmp, -flipdim(etatmp(2:end-1,:),1));
+        etatmp = cat(2, eta, -compat_flip(eta(:,2:end-1),2));
+        etaextended = cat(1, etatmp, -compat_flip(etatmp(2:end-1,:),1));
 end
 [SZ,SX] = size(eta);
 
