@@ -32,7 +32,6 @@ The remainder of this document is a user guide for the code.
 \section{Usage}
 Typical usage is to set problem parameters, then call \verb+djles_refine_solution+ to solve the DJL equation, which returns the isopycnal displacement field $\eta$ and wave speed $c$ in MATLAB variables \verb+eta+ and \verb+c+, respectively. The required problem parameters are:
 \begin{itemize}
- \item $A$ - Target available potential energy (m$^4$/s$^2$)
  \item $L$ and $H$ - Domain length and depth (m)
  \item $N_x$ and $N_z$ - Number of grid points in $x$ and $z$
  \item $\bar{\rho}(z)$ and $\deriv{}{z} \bar{\rho}(z)$
@@ -41,7 +40,12 @@ Typical usage is to set problem parameters, then call \verb+djles_refine_solutio
         \item If using full density, also provide reference density parameter \verb+rho0+.
         \item If using non-dimensionalised density, DJLES will assume \verb+rho0=1+.
        \end{itemize}
-  \item $U_{bg}(z)$, $\deriv{}{z} U_{bg}(z)$, and $\deriv{^2}{z^2} U_{bg}(z)$
+ \item $A$ - Target available potential energy (per unit in $y$)
+       \begin{itemize}
+        \item If using full density, units are kg m/s$^2$
+        \item If using non-dmensionalised density, units are m$^4$/s$^2$
+       \end{itemize}
+ \item $U_{bg}(z)$, $\deriv{}{z} U_{bg}(z)$, and $\deriv{^2}{z^2} U_{bg}(z)$
        - Background velocity profile (m/s) and first two derivatives
 \end{itemize}
 If a background velocity is not desired, set it to zero (see test cases). 
@@ -186,10 +190,10 @@ We solve the wave at low resolution and then raise the resolution in two steps.
 Test case: \verb"case_pineda.m" \&  \verb"case_pineda_cast1.txt" \\\\
 This case is intended as a ``real world'' case where we reproduce the wave shown in Figure 11 of \cite{PinedaEtAl2015}.
 The text file contains two columns, depth (m) and density (kg/m$^3$), and is an approximate reproduction (courtesy Jorge Magalh\~aes) of the smoothed curve of Fig 9a.
-We use the full density here, so we set the reference density \verb+rho0+ as the maximum value.
-The density and first derivatives are constructed as in the synthetic data case.
-Amplitude is raised in a few steps, and then we apply several steps of resolution refinement with epsilon reductions.
-The final wave is solved to a relative residual of order 2e-8.
+We use the full density here, and set the reference density \verb+rho0+ as the maximum value.
+We construct the density and first derivative functions as in the synthetic data case.
+After raising the amplitude in a few steps, we then apply several steps of resolution refinement with epsilon reductions.
+The relative residual of the final wave is order 2e-8.
 
 % References
 \bibliographystyle{kbib}
