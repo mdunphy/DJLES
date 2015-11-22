@@ -8,19 +8,19 @@ Dzz  = djles_diffmatrix(dz, NZ, 2, 'not periodic');
 Dzzc = Dzz(2:end-1, 2:end-1); % cut the endpoints for Dirichlet conditions
 
 % get n2, u and uzz data
-tmpz   =  zc(2:end-1)';
-n2vec  = -g*rhoz(tmpz);
-uvec   =  Ubg(tmpz);
-uzzvec =  Ubgzz(tmpz);
+tmpz   = zc(2:end-1)';
+n2vec  = N2(tmpz);
+uvec   = Ubg(tmpz);
+uzzvec = Ubgzz(tmpz);
 
 % create diagonal matrices
-N2  = diag(n2vec );
-U   = diag(uvec  );
-Uzz = diag(uzzvec);
+N2d  = diag(n2vec );
+Ud   = diag(uvec  );
+Uzzd = diag(uzzvec);
 
 % setup quadratic eigenvalue problem
-A0 = sparse(N2 + U.*U*Dzzc - U*Uzz);
-A1 = sparse(-2*U*Dzzc + Uzz);
+A0 = sparse(N2d + Ud.*Ud*Dzzc - Ud*Uzzd);
+A1 = sparse(-2*Ud*Dzzc + Uzzd);
 A2 = sparse(Dzzc);
 
 % Solve eigenvalue problem; extract first eigenvalue & eigenmode
@@ -93,7 +93,7 @@ while (flag>0)
         disp('problem finding new lambda !!')
     end
     
-    if (verbose)
+    if (verbose >= 1)
         fprintf('F=%e, desired = %e, rescaling b0 by factor of %f...\n',F,A,afact);
         fprintf('new b0 = %f, lambda = %f, V = %f\n\n',b0,lambda,c);
     end
@@ -106,5 +106,5 @@ while (flag>0)
 end
 
 % Cleanup unneeded variables (comment these lines for debugging)
-clear Dz Dzz Dzzc tmpz n2vec uvec uzzvec N2 U Uzz A0 A1 A2 V cc ii flag F clw
+clear Dz Dzz Dzzc tmpz n2vec uvec uzzvec N2d Ud Uzzd A0 A1 A2 V cc ii flag F clw
 clear phi1 uvec E1 E1p E1p2 E1p3 bot r10 r01 E b0 lambda apedens afact eta0

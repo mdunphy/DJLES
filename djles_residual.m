@@ -1,4 +1,4 @@
-function [residual, LHS, RHS] = djles_residual(ks, ms, eta, Ubg, Ubgz, rhoz, z, g, c, gridtype)
+function [residual, LHS, RHS] = djles_residual(ks, ms, eta, Ubg, Ubgz, N2, z, c, gridtype)
 % DJL residual using Eq 2.32 in (Stastna, 2001)
 
 % Odd extend the function in both directions
@@ -20,7 +20,7 @@ LHS = LHS(1:SZ, 1:SX);                      % Trim for eta on gridtype
 % Compute right hand side
 [etax, etaz] = djles_gradient(eta, ks, ms, 'odd', gridtype);
 Umc = Ubg(z-eta)-c;
-RHS = -(Ubgz(z-eta)./Umc).*(1 - (etax.^2 + (1-etaz).^2)) + g*rhoz(z-eta).*eta./(Umc.^2);
+RHS = -(Ubgz(z-eta)./Umc).*(1 - (etax.^2 + (1-etaz).^2)) - N2(z-eta).*eta./(Umc.^2);
 
 % Residual
 residual = LHS-RHS;

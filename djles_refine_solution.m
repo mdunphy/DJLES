@@ -17,7 +17,7 @@ uflag = any(Ubg(zc));
 % Raise the resolution if needed
 eta = djles_raise_resolution(eta,NX,NZ);
 
-if (verbose)
+if (verbose >= 1)
     [~,idx]   = max(abs(eta(:)));
     wave_ampl = eta(idx);
     fprintf('Initial guess:\n wave ampl = %+.10e,   c = %+.10e\n\n',wave_ampl,c);
@@ -31,7 +31,7 @@ while (flag)
     c0        = c;
     lambda0   = g*H/(c*c);
 
-    S = -rhoz(ZC-eta0).*eta0/H; % compute S (DSS2011 Eq 19)
+    S = N2(ZC-eta0).*eta0/(g*H); % compute S (DSS2011 Eq 19)
 
     % Compute R, assemble RHS
     if (uflag)
@@ -56,8 +56,8 @@ while (flag)
     apedens = djles_compute_apedens(rho, eta0, ZC, g, wl, zl);
     F = sum(wsine(:).*apedens(:));
     % Compute S1, S2 (components of DSS2011 Eq 20)
-    S1 = g*sum( wsine(:).*S(:).*nu(:)   );
-    S2 = g*sum( wsine(:).*S(:).*eta0(:) );
+    S1 = g*H*rho0*sum( wsine(:).*S(:).*nu(:)   );
+    S2 = g*H*rho0*sum( wsine(:).*S(:).*eta0(:) );
     t.int = t.int + etime(clock, t0);
 
     % Find new lambda (DSS2011 Eq 20)
@@ -66,11 +66,9 @@ while (flag)
     % check if lambda is OK
     if (lambda < 0)
         fprintf('new lambda has wrong sign --> nonconvergence of iterative procedure\n');
-        if (verbose)
-            fprintf('new lambda = %1.6e\n',lambda);
-            fprintf('   A = %1.10e, F = %1.10e\n',A,F);
-            fprintf('   S1 = %1.8e, S2 = %1.8e, S2/S1 = %1.8e\n',S1,S2,S2/S1);
-        end
+        fprintf('new lambda = %1.6e\n',lambda);
+        fprintf('   A = %1.10e, F = %1.10e\n',A,F);
+        fprintf('   S1 = %1.8e, S2 = %1.8e, S2/S1 = %1.8e\n',S1,S2,S2/S1);
         break;
     end
 
@@ -89,11 +87,11 @@ while (flag)
     reldiff = max(abs(eta(:)-eta0(:))) / abs(wave_ampl);
 
     % Report on state of the operation
-    if (verbose)
+    if (verbose >=1)
         fprintf('Iteration %4d:\n',iteration);
-        fprintf(' wave ampl = %+.10e,   c = %+.10e\n',wave_ampl,c);
-        fprintf(' A         = %+.10e,   F = %+.10e\n',A,F);
-        fprintf(' reldiff   = %+.10e\n\n',reldiff);
+        fprintf(' A       = %+.10e, wave ampl = %+16.10f m\n',A,wave_ampl);
+        fprintf(' F       = %+.10e, c         = %+16.10f m/s\n',F,c);
+        fprintf(' reldiff = %+.10e\n\n',reldiff);
     end
 
     % Stop conditions
@@ -107,7 +105,8 @@ while (flag)
 end
 
 t.stop = clock; t.total = etime(t.stop, t.start);
-if (verbose)
+% Report the timing data
+if (verbose >= 2)
     fprintf('Poisson solve time: %6.2f seconds\n', t.solve);
     fprintf('Integration time:   %6.2f seconds\n', t.int);
     fprintf('Other time:         %6.2f seconds\n', t.total - t.solve - t.int);

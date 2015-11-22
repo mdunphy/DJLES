@@ -23,6 +23,7 @@ start_time = clock;
 djles_refine_solution
 
 % Increase the resolution, and iterate to convergence
+epsilon=1e-6;
 NX=512; NZ=512;
 djles_refine_solution
 

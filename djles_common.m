@@ -13,24 +13,28 @@ if ~exist('max_iteration','var'), max_iteration=2000; end
 if ~exist('NL','var'), NL=20; end
 
 % Underrelaxation factor, 0 < relax <= 1
-% Setting this is often helps in finding a solution and/or speeding
+% Setting this can help in finding a solution and/or speeding
 % convergence. This value is interpreted as the fraction of the new
 % field to keep after an iteration completes, that is,
 %   val = (1-relax)*oldval + (relax)*newval
 % Setting relax=0 prevents the iterations from proceeding, and setting
-% relax=1 simply disables underrelaxation.
-% Values between 0.3 and 0.8 seem to work fairly well.
+% relax=1 simply disables underrelaxation. The default value of 0.5 works
+% well for most cases.
 if ~exist('relax','var'), relax=0.5; end
 
-% gravitational constant (m/s^2)
+% Gravitational acceleration constant (m/s^2)
 if ~exist('g','var'), g=9.81; end
 
-% Verbose flag, set to 1 to see the progress during solving
+% Verbose flag. If >=1, we display a report on solving progress
+%               If >=2, display a timing report
 if ~exist('verbose','var'), verbose=1; end
 
 % Convergence criteria: Stop iterating when the relative difference between
 % successive iterations differs by less than epsilon
 if ~exist('epsilon','var'), epsilon=1e-4; end
+
+% If rho0 is not speficied, assume we are using non-dimensional density
+if ~exist('rho0','var'), rho0=1; end
 
 %%% Generate the grid and wavenumbers %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -50,3 +54,6 @@ ks = (pi/L) * [0:(NX-1) -NX:-1];
 ms = (pi/H) * [0:(NZ-1) -NZ:-1]';
 INVLAP = -1./bsxfun(@plus,ms.^2,ks.^2);
 INVLAP(isinf(INVLAP))=0;
+
+% Create N2(z) function
+N2 = @(z) (-g/rho0)*rhoz(z);

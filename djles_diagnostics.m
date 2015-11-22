@@ -34,12 +34,11 @@ apedens = djles_compute_apedens(rho, eta, Z, g, wl, zl);
 [ux, uz] = djles_gradient(u, ks, ms, 'even', targetgrid);
 [wx, wz] = djles_gradient(w, ks, ms, 'odd', targetgrid);
 
-% Vorticity, density, buoyancy frequency and Richardson number
+% Vorticity, density and Richardson number
 vorticity = uz - wx;
 density = rho(Z-eta);
-N2 = -g*rhoz(Z-eta);
-ri = N2./(uz.*uz);
+ri = N2(Z-eta)./(uz.*uz);
 
 % Residual in DJL equation
-[residual, LHS, RHS] = djles_residual(ks, ms, eta, Ubg, Ubgz, rhoz, Z, g, c, targetgrid);
+[residual, LHS, RHS] = djles_residual(ks, ms, eta, Ubg, Ubgz, N2, Z, c, targetgrid);
 fprintf('Relative residual %e\n',max(abs(residual(:))) / max(abs(LHS(:))));

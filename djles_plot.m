@@ -24,7 +24,7 @@ elseif plottype==2
     caxis([-1 1]*max(abs(w(:))));
     subplot(4,2,5); imagesc(x,z,kewave);    title('kewave (m^2/s^2)');
     caxis([0 1]*max(abs(kewave(:))));
-    subplot(4,2,6); imagesc(x,z,apedens);   title('ape (m^2/s^2)');
+    subplot(4,2,6); imagesc(x,z,apedens);   title('ape density');
     caxis([0 1]*max(abs(apedens(:))));
     subplot(4,2,7); imagesc(x,z,ri);        title('Ri');
     caxis([0.2 1]);

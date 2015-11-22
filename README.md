@@ -1,6 +1,6 @@
 ## DJLES - Dubreil-Jacotin-Long Equation Solver
 
-DJLES is a MATLAB based software package that solves the Dubreil-Jacotin-Long equation, yielding a mode-one soliton solution.
+DJLES is a MATLAB based software package that solves the Dubreil-Jacotin-Long equation, yielding a mode-one internal solitary wave.
 
 ## Documentation
 
