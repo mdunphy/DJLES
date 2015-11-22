@@ -14,7 +14,7 @@
 
 \begin{center}
 \huge{DJLES: Dubreil-Jacotin-Long Equation Solver}\\[1em]
-\large{Nov 02, 2015}\\
+\large{Nov 22, 2015}\\
 Michael Dunphy
 \end{center}
 
@@ -25,18 +25,22 @@ DJLES differs from \verb+soliw+ by being MATLAB based, which avoids the need to 
 
 If you find this code useful, please cite \cite{DunphySubichStastna2011} as it will encourage the author to maintain/improve DJLES. Bug reports, fixes/improvements and additional case files are welcome; please send them to \href{mailto:mdunphy@uwaterloo.ca}{mdunphy@uwaterloo.ca} for inclusion in a future version.
 
-DLJES has benefited from contributions from Marek Stastna, Kevin Lamb, Chris Subich and Derek Steinmoeller.
+DLJES has benefited from contributions from Marek Stastna, Kevin Lamb, Chris Subich, Derek Steinmoeller and Jorge Magalh\~aes.
 
 The remainder of this document is a user guide for the code.
 
 \section{Usage}
-Typical usage is to set problem parameters, then call \verb+djles_refine_solution+ to solve the DJL equation, which returns the isopycnal displacement field $\eta$ and wave speed $c$ in MATLAB variables \verb+eta+ and \verb+c+, respectively. The ten required problem parameters are:
+Typical usage is to set problem parameters, then call \verb+djles_refine_solution+ to solve the DJL equation, which returns the isopycnal displacement field $\eta$ and wave speed $c$ in MATLAB variables \verb+eta+ and \verb+c+, respectively. The required problem parameters are:
 \begin{itemize}
  \item $A$ - Target available potential energy (m$^4$/s$^2$)
  \item $L$ and $H$ - Domain length and depth (m)
  \item $N_x$ and $N_z$ - Number of grid points in $x$ and $z$
  \item $\bar{\rho}(z)$ and $\deriv{}{z} \bar{\rho}(z)$
-       - Background density profile (unitless: normalized by $\rho_0$) and first derivative
+       - Background density profile and first derivative
+       \begin{itemize}
+        \item If using full density, also provide reference density parameter \verb+rho0+.
+        \item If using non-dimensionalised density, DJLES will assume \verb+rho0=1+.
+       \end{itemize}
   \item $U_{bg}(z)$, $\deriv{}{z} U_{bg}(z)$, and $\deriv{^2}{z^2} U_{bg}(z)$
        - Background velocity profile (m/s) and first two derivatives
 \end{itemize}
@@ -58,7 +62,7 @@ There are a few tuning knobs. Set them in the case file to override the default.
         The default of 0.5 works well in most cases, and a value of 1 disables underrelaxation.
         Using a small value can help stabilise the solver at the expense of needing more iterations.
  \item \verb+g+ is the gravitational acceleration constant, default value is 9.81 m/s$^2$.
- \item \verb+verbose+ is a switch that enables printing the progress as the iterations proceed. Setting to 0 disables printing, and to 1 enabled printing. Default is 1.
+ \item \verb+verbose+ controls the verbosity of status updates. A value of 0 disables printing, values $\ge 1$ prints updates after each iteration, and values $\ge 2$ prints timing data upon completion. Default is 1.
 \item \verb+epsilon+ controls the stop condition, which is the relative difference between successive iterations. Default $1\times10^{-4}$. Smaller values will require more solver iterations.
 \end{itemize}
 
@@ -69,8 +73,8 @@ A successful solve will have a relative error of roughly \verb+epsilon+/\verb+re
 If the solver fails to converge, 
 \begin{enumerate}
  \item Ensure that your density profile $\rho(z)$ is stably stratified.
- \item Run the solver with a small underrelaxation factor. A value of 0.1 or even 0.01 may suppress oscillations and stabilise the solver. 
- \item Ensure that your density profile (and stratification profile) is smooth.
+ \item Run the solver with a smaller underrelaxation factor. A value of 0.1 or even 0.01 may suppress oscillations and stabilise the solver. 
+ \item Ensure that your density profile (and first derivative) is smooth.
 \end{enumerate}
 
 \subsection{Compatibility notes}
@@ -103,10 +107,10 @@ The scripts are
 Filename                  - Description
 -----------------------------------------------------------------------------------------
 djles_common.m            - Sets default parameters and generates grid and wavenumbers.
-djles_diagnostics.m       - Computes wave velocities, vorticity, etc from eta and c
+djles_diagnostics.m       - Computes wave velocities, vorticity, etc from eta and c.
 djles_initial_guess.m     - Used by djles_refine_solution.m to get an initial guess for
                             eta & c from WNL theory if an initial guess is not provided.
-djles_plot.m              - Plots the solution and some diagnostics
+djles_plot.m              - Plots the solution and some diagnostics.
 djles_refine_solution.m   - This is the main m-file that each case files calls. It
                             performs the iterative procedure to find a wave solution.
 \end{verbatim}
@@ -114,13 +118,14 @@ djles_refine_solution.m   - This is the main m-file that each case files calls. 
 \subsection{Helper Functions}
 The helper functions are
 \begin{verbatim}
+compat_flip.m             - Wrapper function to handle deprecating flipdim.
 djles_compute_apedens.m   - Computes the available potential energy density.
 djles_diffmatrix.m        - Generates a finite difference differentiation matrix for use
                             in differentiating data.
 djles_gradient.m          - Computes the gradient of a scalar function.
-djles_residual.m          - Computes the residual in the DJL equation.
 djles_raise_resolution.m  - Increases the resolution of the solution.
-djles_shift_grid.m        - Shifts the eta solution from cell-centred grid to a cell
+djles_residual.m          - Computes the residual in the DJL equation.
+djles_shift_grid.m        - Shifts the eta solution from cell-centred grid to a cell.
                             edge grid. Increases the matrix size by 1 in each dimension.
 djles_sinequadrature.m    - Computed the interior grid sine quadrature weights for
                             area integrals.
@@ -176,6 +181,15 @@ The text file contains two columns, depth (m) and temperature (\textdegree C), a
 There is no surface value so we extrapolate to find a value for $z=0$.
 We construct the density and density gradient in the same fashion as in the synthetic data case, and use no background current.
 We solve the wave at low resolution and then raise the resolution in two steps.
+
+\subsubsection{Pineda et al. (2015)}
+Test case: \verb"case_pineda.m" \&  \verb"case_pineda_cast1.txt" \\\\
+This case is intended as a ``real world'' case where we reproduce the wave shown in Figure 11 of \cite{PinedaEtAl2015}.
+The text file contains two columns, depth (m) and density (kg/m$^3$), and is an approximate reproduction (courtesy Jorge Magalh\~aes) of the smoothed curve of Fig 9a.
+We use the full density here, so we set the reference density \verb+rho0+ as the maximum value.
+The density and first derivatives are constructed as in the synthetic data case.
+Amplitude is raised in a few steps, and then we apply several steps of resolution refinement with epsilon reductions.
+The final wave is solved to a relative residual of order 2e-8.
 
 % References
 \bibliographystyle{kbib}
