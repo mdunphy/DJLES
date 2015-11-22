@@ -50,7 +50,7 @@ for alpha=linspace(0,1,4)
     Ubgz  = @(z) alpha*Utargetz(z);
     Ubgzz = @(z) alpha*Utargetzz(z);
     
-    % Use a reduced epsilon for these intermediate waves
+    % Use a larger epsilon for these intermediate waves
     epsilon=1e-3;
     
     % Iterate the DJL solution
