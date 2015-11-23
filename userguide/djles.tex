@@ -25,7 +25,7 @@ DJLES differs from \verb+soliw+ by being MATLAB based, which avoids the need to 
 
 If you find this code useful, please cite \cite{DunphySubichStastna2011} as it will encourage the author to maintain/improve DJLES. Bug reports, fixes/improvements and additional case files are welcome; please send them to \href{mailto:mdunphy@uwaterloo.ca}{mdunphy@uwaterloo.ca} for inclusion in a future version.
 
-DLJES has benefited from contributions from Marek Stastna, Kevin Lamb, Chris Subich, Derek Steinmoeller and Jorge Magalh\~aes.
+DJLES has benefited from contributions from Marek Stastna, Kevin Lamb, Chris Subich, Derek Steinmoeller, Jorge Magalh\~aes and Jos\'e da Silva.
 
 The remainder of this document is a user guide for the code.
 
@@ -38,12 +38,12 @@ Typical usage is to set problem parameters, then call \verb+djles_refine_solutio
        - Background density profile and first derivative
        \begin{itemize}
         \item If using full density, also provide reference density parameter \verb+rho0+.
-        \item If using non-dimensionalised density, DJLES will assume \verb+rho0=1+.
+        \item If using non-dimensional density, DJLES will assume \verb+rho0=1+.
        \end{itemize}
  \item $A$ - Target available potential energy (per unit in $y$)
        \begin{itemize}
         \item If using full density, units are kg m/s$^2$
-        \item If using non-dmensionalised density, units are m$^4$/s$^2$
+        \item If using non-dimensional density, units are m$^4$/s$^2$
        \end{itemize}
  \item $U_{bg}(z)$, $\deriv{}{z} U_{bg}(z)$, and $\deriv{^2}{z^2} U_{bg}(z)$
        - Background velocity profile (m/s) and first two derivatives
@@ -79,6 +79,7 @@ If the solver fails to converge,
  \item Ensure that your density profile $\rho(z)$ is stably stratified.
  \item Run the solver with a smaller underrelaxation factor. A value of 0.1 or even 0.01 may suppress oscillations and stabilise the solver. 
  \item Ensure that your density profile (and first derivative) is smooth.
+ \item Ensure that the domain width $L$ is wide enough to contain the wave. The boundary conditions for the problem are $\eta=0$ on all boundaries; if your domain is too narrow it will be enforcing that condition at the wrong location.
 \end{enumerate}
 
 \subsection{Compatibility notes}
@@ -136,7 +137,7 @@ djles_sinequadrature.m    - Computed the interior grid sine quadrature weights f
 \end{verbatim}
 
 \subsection{Test cases}
-Included are six test cases that demonstrate how to use DJLES. A brief description of each follows.
+Included are seven test cases that demonstrate how to use DJLES. A brief description of each follows.
 
 \subsubsection{Small APE}
 Test case: \verb"case_small_ape.m" \\\\
@@ -188,8 +189,8 @@ We solve the wave at low resolution and then raise the resolution in two steps.
 
 \subsubsection{Pineda et al. (2015)}
 Test case: \verb"case_pineda.m" \&  \verb"case_pineda_cast1.txt" \\\\
-This case is intended as a ``real world'' case where we reproduce the wave shown in Figure 11 of \cite{PinedaEtAl2015}.
-The text file contains two columns, depth (m) and density (kg/m$^3$), and is an approximate reproduction (courtesy Jorge Magalh\~aes) of the smoothed curve of Fig 9a.
+This case is intended as a typical shallow continental shelf case where we reproduce the wave shown in Figure 11 of \cite{PinedaEtAl2015}.
+The text file contains two columns, depth (m) and density (kg/m$^3$), and is an approximate reproduction (courtesy Jorge Magalh\~aes and Jos\'e da Silva) of the smoothed curve of Fig 9a.
 We use the full density here, and set the reference density \verb+rho0+ as the maximum value.
 We construct the density and first derivative functions as in the synthetic data case.
 After raising the amplitude in a few steps, we then apply several steps of resolution refinement with epsilon reductions.
