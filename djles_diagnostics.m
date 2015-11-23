@@ -18,7 +18,7 @@ end
 %%% Compute the diagnostics %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % Compute velocities (Via SL2002 Eq 27)
-[etax, etaz] = djles_gradient(eta, ks, ms, 'odd', targetgrid);
+[etax, etaz] = djles_gradient(eta, ks, ms, 'odd', 'odd', targetgrid);
 u = Ubg(Z-eta).*(1-etaz) + c*etaz;
 w = -Ubg(Z-eta).*(-etax) - c*etax;
 uwave = u - Ubg(Z);
@@ -31,8 +31,8 @@ kewave = 0.5*(uwave.^2 + w.^2);
 apedens = djles_compute_apedens(rho, eta, Z, g, wl, zl);
 
 % Get gradient of u and w
-[ux, uz] = djles_gradient(u, ks, ms, 'even', targetgrid);
-[wx, wz] = djles_gradient(w, ks, ms, 'odd', targetgrid);
+[ux, uz] = djles_gradient(u, ks, ms, 'odd', 'even', targetgrid);
+[wx, wz] = djles_gradient(w, ks, ms, 'even', 'odd', targetgrid);
 
 % Vorticity, density and Richardson number
 vorticity = uz - wx;

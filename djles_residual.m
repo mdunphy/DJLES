@@ -18,7 +18,7 @@ LHS = real(ifft2(LAP.*fft2(etaextended)));  % Laplacian of extended eta
 LHS = LHS(1:SZ, 1:SX);                      % Trim for eta on gridtype
 
 % Compute right hand side
-[etax, etaz] = djles_gradient(eta, ks, ms, 'odd', gridtype);
+[etax, etaz] = djles_gradient(eta, ks, ms, 'odd', 'odd', gridtype);
 Umc = Ubg(z-eta)-c;
 RHS = -(Ubgz(z-eta)./Umc).*(1 - (etax.^2 + (1-etaz).^2)) - N2(z-eta).*eta./(Umc.^2);
 

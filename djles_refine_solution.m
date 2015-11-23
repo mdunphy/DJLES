@@ -35,7 +35,7 @@ while (flag)
 
     % Compute R, assemble RHS
     if (uflag)
-        [eta0x, eta0z] = djles_gradient(eta0, ks, ms, 'odd', 'interior');
+        [eta0x, eta0z] = djles_gradient(eta0, ks, ms, 'odd', 'odd', 'interior');
         uhat  = Ubg(ZC-eta0)/c0;
         uhatz = Ubgz(ZC-eta0)/c0;
         R = (uhatz ./ (uhat -1)) .* ( 1 - (eta0x.^2 + (1-eta0z).^2));
