@@ -36,7 +36,7 @@ else
         error(mfilename, 'polyeig function not found! see comments here for workaround');
         % This version of Octave is ancient and does not have polyeig.m
         % You can grab polyeig.m from Octave's source code repository and
-        % save it in the DLJES folder to proceed. This version works:
+        % save it in the DJLES directory to proceed. This version works:
         %  http://hg.savannah.gnu.org/hgweb/octave/file/ca1648b2e673/scripts/polynomial/polyeig.m
     end
     % Convert cc from diagonal_matrix to vector if needed
