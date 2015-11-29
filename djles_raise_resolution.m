@@ -11,7 +11,7 @@ if ~isequal(NX0,NX)
     RX=NX/NX0;
     
     % Change resolution in X
-    eta0in = [eta0 -fliplr(eta0)];
+    eta0in = djles_extend(eta0, 'odd', [], 'interior');
     eta0out = real(interpft(eta0in, 4*NX, 2));
     eta0out = circshift(eta0out, [0 (RX-1)]);
     eta0 = eta0out(:, 1:2:2*NX);
@@ -21,7 +21,7 @@ if ~isequal(NZ0,NZ)
     RZ=NZ/NZ0;
     
     % Change resolution in Z
-    eta0in = [eta0; -flipud(eta0)];
+    eta0in = djles_extend(eta0, [], 'odd', 'interior');
     eta0out = real(interpft(eta0in, 4*NZ, 1));
     eta0out = circshift(eta0out, [(RZ-1) 0]);
     eta0 = eta0out(1:2:2*NZ, :);

@@ -46,7 +46,7 @@ while (flag)
 
     % Solve the linear Poisson problem (DSS2011 Eq 18)
     t0 = clock;
-    temp = [rhs -compat_flip(rhs,2); -compat_flip(rhs,1) rot90(rhs,2)];
+    temp = djles_extend(rhs, 'odd', 'odd', 'interior');
     temp = real(ifft2(INVLAP.*fft2(temp)));
     nu = temp(1:NZ, 1:NX);
     t.solve = t.solve + etime(clock, t0);

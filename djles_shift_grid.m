@@ -1,9 +1,6 @@
 function fe = djles_shift_grid(fc, NX, NZ, symmx, symmz)
 % Shifts the data fc from the interior grid to the endpoint grid
 
-sx=getsymm(symmx);
-sz=getsymm(symmz);
-
 [SZ,SX] = size(fc); % Size of incoming grid
 
 if isequal([SZ SX], [NZ NX]+1)
@@ -12,26 +9,15 @@ if isequal([SZ SX], [NZ NX]+1)
 else
     % We're on the interior grid, need to move to endpoint grid
     % Shift grid in X using FFT interpolation
-    eta0in = [fc sx*compat_flip(fc,2)];
+    eta0in = djles_extend(fc, symmx, [], 'interior');
     eta0out = real(interpft(eta0in, 4*NX, 2));
     eta0out = circshift(eta0out, [0 1]);
     temp = eta0out(:, 1:2:2*NX+1);
     
     % Shift grid in Z using FFT interpolation
-    eta0in = [temp; sz*compat_flip(temp,1)];
+    eta0in = djles_extend(temp, [], symmz, 'interior');
     eta0out = real(interpft(eta0in, 4*NZ, 1));
     eta0out = circshift(eta0out, [1 0]);
     fe = eta0out(1:2:2*NZ+1, :);
-end
-end
-
-function s = getsymm(symm)
-switch symm
-    case 'odd'
-        s=-1;
-    case 'even'
-        s=1;
-    otherwise
-        warning('You must specify even or odd symmetry here')
 end
 end

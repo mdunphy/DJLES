@@ -2,14 +2,8 @@ function [residual, LHS, RHS] = djles_residual(ks, ms, eta, Ubg, Ubgz, N2, z, c,
 % DJL residual using Eq 2.32 in (Stastna, 2001)
 
 % Odd extend the function in both directions
-switch gridtype
-    case 'interior'
-        etatmp = cat(2, eta, -compat_flip(eta,2));
-        etaextended = cat(1, etatmp, -compat_flip(etatmp,1));
-    case 'endpoint'
-        etatmp = cat(2, eta, -compat_flip(eta(:,2:end-1),2));
-        etaextended = cat(1, etatmp, -compat_flip(etatmp(2:end-1,:),1));
-end
+etaextended = djles_extend(eta, 'odd', 'odd', gridtype);
+
 [SZ,SX] = size(eta);
 
 % Compute left hand side

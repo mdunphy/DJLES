@@ -9,7 +9,7 @@ targetgrid='interior';
 if isequal(targetgrid, 'endpoint')
     % DJLES computes eta on the interior grid; if we want diagnostics on
     % the endpoint grid then we need to do a shift.
-    eta=djles_shift_grid(eta,NX,NZ,'odd');
+    eta=djles_shift_grid(eta,NX,NZ,'odd','odd');
     Z=ZE; z=ze; x=xe;
 else
     Z=ZC; z=zc; x=xc;

@@ -50,8 +50,8 @@ xe = (0:NX)*dx;   ze = (0:NZ)*dz -H;   [XE, ZE] = meshgrid(xe,ze);
 wsine = djles_sinequadrature(NX,NZ,H,L);
 
 % Create the wavenumber vectors and inverse Laplacian operator
-ks = (pi/L) * [0:(NX-1) -NX:-1];
-ms = (pi/H) * [0:(NZ-1) -NZ:-1]';
+ks = (pi/L) * [0:(NX-1) -NX:-1];   %ksi = -1./ks; ksi(ks==0)=0;
+ms = (pi/H) * [0:(NZ-1) -NZ:-1]';  msi = -1./ms; msi(ms==0)=0;
 INVLAP = -1./bsxfun(@plus,ms.^2,ks.^2);
 INVLAP(isinf(INVLAP))=0;
 
