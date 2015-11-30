@@ -19,19 +19,19 @@ Ud   = diag(uvec  );
 Uzzd = diag(uzzvec);
 
 % setup quadratic eigenvalue problem
-A0 = sparse(N2d + Ud.*Ud*Dzzc - Ud*Uzzd);
-A1 = sparse(-2*Ud*Dzzc + Uzzd);
-A2 = sparse(Dzzc);
+B0 = sparse(N2d + Ud.*Ud*Dzzc - Ud*Uzzd);
+B1 = sparse(-2*Ud*Dzzc + Uzzd);
+B2 = sparse(Dzzc);
 
 % Solve eigenvalue problem; extract first eigenvalue & eigenmode
 if ~exist('OCTAVE_VERSION', 'builtin')
     % We're in MATLAB, proceed normally
-    [V,cc]=polyeig(A0,A1,A2);
+    [V,cc]=polyeig(B0,B1,B2);
 else
     % We're in Octave
     if exist('polyeig','file')
         % This version of Octave has polyeig, use it
-        [V,cc]=polyeig(A0,A1,A2);
+        [V,cc]=polyeig(B0,B1,B2);
     else
         error(mfilename, 'polyeig function not found! see comments here for workaround');
         % This version of Octave is ancient and does not have polyeig.m
@@ -106,5 +106,5 @@ while (flag>0)
 end
 
 % Cleanup unneeded variables (comment these lines for debugging)
-clear Dz Dzz Dzzc tmpz n2vec uvec uzzvec N2d Ud Uzzd A0 A1 A2 V cc ii flag F clw
+clear Dz Dzz Dzzc tmpz n2vec uvec uzzvec N2d Ud Uzzd B0 B1 B2 V cc ii flag F clw
 clear phi1 uvec E1 E1p E1p2 E1p3 bot r10 r01 E b0 lambda apedens afact eta0
