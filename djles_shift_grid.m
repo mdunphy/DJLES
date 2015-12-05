@@ -4,7 +4,7 @@ function fe = djles_shift_grid(fc, NX, NZ, symmx, symmz)
 
 [SZ,SX] = size(fc); % Size of incoming grid
 
-if isequal(SX, NX+1) || ~isempty(symmx)
+if ~isequal(SX, NX+1) && ~isempty(symmx)
     % Shift grid in X using FFT interpolation
     eta0in = djles_extend(fc, symmx, [], 'interior');
     eta0out = real(interpft(eta0in, 4*NX, 2));
@@ -12,7 +12,7 @@ if isequal(SX, NX+1) || ~isempty(symmx)
     fc = eta0out(:, 1:2:2*NX+1);
 end
 
-if isequal(SZ, NZ+1) || ~isempty(symmz)
+if ~isequal(SZ, NZ+1) && ~isempty(symmz)
     % Shift grid in Z using FFT interpolation
     eta0in = djles_extend(fc, [], symmz, 'interior');
     eta0out = real(interpft(eta0in, 4*NZ, 1));
