@@ -55,7 +55,6 @@ fprintf('Total wall clock time: %f seconds\n',etime(end_time, start_time));
 djles_diagnostics
 djles_plot
 djles_pressure
-return
 
 % Construct Pineda et al. (2015) Figure 11
 figure(11)
