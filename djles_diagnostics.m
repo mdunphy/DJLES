@@ -34,6 +34,10 @@ apedens = djles_compute_apedens(rho, eta, Z, g, wl, zl);
 [ux, uz] = djles_gradient(u, ks, ms, 'odd', 'even', targetgrid);
 [wx, wz] = djles_gradient(w, ks, ms, 'even', 'odd', targetgrid);
 
+% Surface strain rate
+uxze=djles_shift_grid(ux,NX,NZ,[],'even'); % shift ux to z endpoints
+surf_strain = -uxze(end,:); % = -du/dx(z=0)
+
 % Vorticity, density and Richardson number
 vorticity = uz - wx;
 density = rho(Z-eta);
