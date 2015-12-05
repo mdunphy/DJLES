@@ -23,7 +23,7 @@ DJLES is a MATLAB package that finds a mode-one solution to the DJL equation. \c
 
 DJLES differs from \verb+soliw+ by being MATLAB based, which avoids the need to compile C code and import the resulting raw binary files into MATLAB. It also takes advantage of MATLAB's built in parallelisation of FFTs which accelerates solution on multi-core computers. Lastly, it easily employs the resolution refinement approach of \cite{DunphySubichStastna2011}, a feature not available in \verb+soliw+
 
-If you find this code useful, please cite \cite{DunphySubichStastna2011} as it will encourage the author to maintain/improve DJLES. Bug reports, fixes/improvements and additional case files are welcome; please send them to \href{mailto:mdunphy@uwaterloo.ca}{mdunphy@uwaterloo.ca} for inclusion in a future version.
+If you find this code useful, please cite \cite{DunphySubichStastna2011} as it will encourage the author to maintain/improve DJLES. Bug reports, fixes/improvements and additional case files are welcome; please contact \href{mailto:mdunphy@uwaterloo.ca}{mdunphy@uwaterloo.ca} for inclusion in a future version.
 
 DJLES has benefited from contributions from Marek Stastna, Kevin Lamb, Chris Subich, Derek Steinmoeller, Jorge Magalh\~aes and Jos\'e da Silva.
 
@@ -32,24 +32,24 @@ The remainder of this document is a user guide for the code.
 \section{Usage}
 Typical usage is to set problem parameters, then call \verb+djles_refine_solution+ to solve the DJL equation, which returns the isopycnal displacement field $\eta$ and wave speed $c$ in MATLAB variables \verb+eta+ and \verb+c+, respectively. The required problem parameters are:
 \begin{itemize}
- \item $L$ and $H$ - Domain length and depth (m)
- \item $N_x$ and $N_z$ - Number of grid points in $x$ and $z$
+ \item $L$ and $H$ -- Domain length and depth (m)
+ \item $N_x$ and $N_z$ -- Number of grid points in $x$ and $z$
  \item $\bar{\rho}(z)$ and $\deriv{}{z} \bar{\rho}(z)$
-       - Background density profile and first derivative
+       -- Background density profile and first derivative
        \begin{itemize}
         \item If using full density, also provide reference density parameter \verb+rho0+.
         \item If using non-dimensional density, DJLES will assume \verb+rho0=1+.
        \end{itemize}
- \item $A$ - Target available potential energy (per unit in $y$)
+ \item $A$ -- Target available potential energy (per unit in $y$)
        \begin{itemize}
-        \item If using full density, units are kg m/s$^2$
-        \item If using non-dimensional density, units are m$^4$/s$^2$
+        \item If using full density, units are kg m/s$^2$.
+        \item If using non-dimensional density, units are m$^4$/s$^2$.
        \end{itemize}
  \item $U_{bg}(z)$, $\deriv{}{z} U_{bg}(z)$, and $\deriv{^2}{z^2} U_{bg}(z)$
-       - Background velocity profile (m/s) and first two derivatives
+       -- Background velocity profile (m/s) and first two derivatives
 \end{itemize}
 If a background velocity is not desired, set it to zero (see test cases). 
-Once the solution is complete, \verb+djles_diagnostics+ computes the associated velocity fields, vorticity, etc., and \verb+djles_plot+ produces a simple plot of these fields.
+Once the solution is complete, \verb+djles_diagnostics+ computes the associated velocity fields, vorticity, etc., \verb+djles_pressure+ computes the pressure, and \verb+djles_plot+ produces a simple plot of these fields.
 
 During the first call to \verb+djles_refine_solution+, we use weakly nonlinear theory to find an initial guess for the solution, which is then iterated to convergence. Subsequent calls to \verb+djles_refine_solution+ use the previous fully nonlinear solution as the initial guess. This allows for the strategy of successively adjusting parameters (resolution, wave APE, etc) to ease/accelerate finding a solution. The various test cases demonstrate several solution scenarios.
 
@@ -66,7 +66,7 @@ There are a few tuning knobs. Set them in the case file to override the default.
         The default of 0.5 works well in most cases, and a value of 1 disables underrelaxation.
         Using a small value can help stabilise the solver at the expense of needing more iterations.
  \item \verb+g+ is the gravitational acceleration constant, default value is 9.81 m/s$^2$.
- \item \verb+verbose+ controls the verbosity of status updates. A value of 0 disables printing, values $\ge 1$ prints updates after each iteration, and values $\ge 2$ prints timing data upon completion. Default is 1.
+ \item \verb+verbose+ controls the verbosity of status updates. A value of 0 disables printing, a values $\ge 1$ enables printing updates after each iteration, and a value $\ge 2$ enables printing of timing data upon completion. Default is 1.
 \item \verb+epsilon+ controls the stop condition, which is the relative difference between successive iterations. Default $1\times10^{-4}$. Smaller values will require more solver iterations.
 \end{itemize}
 
@@ -91,7 +91,7 @@ If the solver fails to converge,
 \end{itemize}
 
 \subsection{Numerical Grid}
-The domain is the rectangular region $[0,L] \times [-H,0]$ and is discretized into $N_x\times N_z$ grid boxes. The boundary conditions for the problem are zero, so we use the cell centres for the coordinates, that is,
+The domain is the rectangular region $[0,L] \times [-H,0]$ and is discretized into $N_x\times N_z$ grid boxes. The boundary conditions for the problem are zero, and we use the cell centres for the coordinates, that is,
 \begin{align}
 x_i^c &= \frac{\Delta x}{2}  + i \Delta x, \quad i \in 0,1,2,\hdots,N_x-1,\\
 z_j^c &= -H + \frac{\Delta z}{2}  + j \Delta z, \quad j  \in 0,1,2,\hdots,N_z-1,
@@ -116,6 +116,9 @@ djles_diagnostics.m       - Computes wave velocities, vorticity, etc from eta an
 djles_initial_guess.m     - Used by djles_refine_solution.m to get an initial guess for
                             eta & c from WNL theory if an initial guess is not provided.
 djles_plot.m              - Plots the solution and some diagnostics.
+djles_pressure.m          - Computes the non-hydrostatic pressure and residuals in the
+                            governing equations. Uses results from djles_diagnostics.m.
+                            Plots the solution and some diagnostics.
 djles_refine_solution.m   - This is the main m-file that each case files calls. It
                             performs the iterative procedure to find a wave solution.
 \end{verbatim}
@@ -123,16 +126,15 @@ djles_refine_solution.m   - This is the main m-file that each case files calls. 
 \subsection{Helper Functions}
 The helper functions are
 \begin{verbatim}
-compat_flip.m             - Wrapper function to handle deprecating flipdim.
+djles_change_resolution.m - Changes the resolution of the solution.
 djles_compute_apedens.m   - Computes the available potential energy density.
 djles_diffmatrix.m        - Generates a finite difference differentiation matrix for use
                             in differentiating data.
-djles_gradient.m          - Computes the gradient of a scalar function.
-djles_raise_resolution.m  - Increases the resolution of the solution.
+djles_extend.m            - Extends the input data using specified symmetry.
+djles_gradient.m          - Computes the gradient of input data.
 djles_residual.m          - Computes the residual in the DJL equation.
-djles_shift_grid.m        - Shifts the eta solution from cell-centred grid to a cell.
-                            edge grid. Increases the matrix size by 1 in each dimension.
-djles_sinequadrature.m    - Computed the interior grid sine quadrature weights for
+djles_shift_grid.m        - Shifts the input data from cell centres to cell endpoints.
+djles_sinequadrature.m    - Computes the interior grid sine quadrature weights for
                             area integrals.
 \end{verbatim}
 
@@ -189,12 +191,20 @@ We solve the wave at low resolution and then raise the resolution in two steps.
 
 \subsubsection{Pineda et al. (2015)}
 Test case: \verb"case_pineda.m" \&  \verb"case_pineda_cast1.txt" \\\\
-This case is intended as a typical shallow continental shelf case where we reproduce the wave shown in Figure 11 of \cite{PinedaEtAl2015}.
+This case is intended as a typical shallow continental shelf case where we reproduce the DJL solutions shown in \cite{PinedaEtAl2015}.
 The text file contains two columns, depth (m) and density (kg/m$^3$), and is an approximate reproduction (courtesy Jorge Magalh\~aes and Jos\'e da Silva) of the smoothed curve of Fig 9a.
-We use the full density here, and set the reference density \verb+rho0+ as the maximum value.
-We construct the density and first derivative functions as in the synthetic data case.
-After raising the amplitude in a few steps, we then apply several steps of resolution refinement with epsilon reductions.
-The relative residual of the final wave is order 2e-8.
+We use the full density and set the reference density \verb+rho0+ as the maximum value, and construct the density and first derivative functions as in the synthetic data case.
+
+The first part of the script finds the wave showcased in Figure 11.
+After raising the target APE in a few steps at low resolution and large epsilon, we apply several steps of resolution refinement with epsilon reductions.
+The relative residual of the final wave is order $4\times 10^{-7}$, and matches \citep{PinedaEtAl2015} to three significant figures in wave height ($-14.1176$ m vs. $-14.1$ m) and two significant figures in phase speed (0.585978 m/s vs. 0.585 m/s).
+
+The second part of the script reproduces the solid curves of Figure 10.
+We sweep over a range of target APE values and record the wave height, phase speed, and velocity and pressure one metre above the bottom.
+Each wave is reused as the initial guess for the next APE value as the sweep progresses. 
+
+Lastly, we note there is a difference in amplitude between the pressure reported in \cite{PinedaEtAl2015} and that computed by DJLES (Figures 10c and 11c).
+We compute residuals by substituting the wave fields into the Boussinesq equations moving with the wave (see bottom part of \verb+djles_pressure.m+), and find that the residuals are appropriately small, which indicates that the pressure computed by DJLES is correct.
 
 % References
 \bibliographystyle{kbib}
