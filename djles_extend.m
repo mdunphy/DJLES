@@ -1,6 +1,6 @@
 function fe = djles_extend(f, symmx, symmz, gridtype)
 % Extends the function f using symmetry symmx, symmz in x and z
-% Specify [] to skip extending a dimension
+% Specify symmetry as [] to skip extending a dimension
 
 fe = extendx(f , symmx, gridtype);
 fe = extendz(fe, symmz, gridtype);

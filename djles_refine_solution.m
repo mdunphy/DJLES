@@ -14,8 +14,8 @@ if ~exist('eta','var'), djles_initial_guess; end
 % Check for nonzero velocity profile, save time below if it's zero
 uflag = any(Ubg(zc));
 
-% Raise the resolution if needed
-eta = djles_raise_resolution(eta,NX,NZ);
+% Change the resolution if needed
+eta = djles_change_resolution(eta,NX,NZ);
 
 if (verbose >= 1)
     [~,idx]   = max(abs(eta(:)));
