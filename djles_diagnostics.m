@@ -31,7 +31,7 @@ kewave = 0.5*(uwave.^2 + w.^2);
 apedens = djles_compute_apedens(rho, eta, Z, g, wl, zl);
 
 % Get gradient of u and w
-[ux, uz] = djles_gradient(u, ks, ms, 'odd', 'even', targetgrid);
+[ux, uz] = djles_gradient(u, ks, ms, 'even', 'even', targetgrid);
 [wx, wz] = djles_gradient(w, ks, ms, 'even', 'odd', targetgrid);
 
 % Surface strain rate
