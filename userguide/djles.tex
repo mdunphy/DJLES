@@ -1,9 +1,11 @@
 \documentclass[letterpaper]{article}
 \usepackage{amsmath} 
 \usepackage{fullpage}
-\usepackage{hyperref}
 \usepackage{natbib}
 \usepackage{textcomp}
+\usepackage{color}
+\definecolor{darkblue}{rgb}{0.0,0.0,0.9}
+\usepackage[colorlinks=true,urlcolor=darkblue,linkcolor=black,citecolor=darkblue]{hyperref}
 
 \newcommand{\deriv}[2]{\frac{\mathrm{d}#1}{\mathrm{d}#2}}
 
@@ -14,16 +16,16 @@
 
 \begin{center}
 \huge{DJLES: Dubreil-Jacotin-Long Equation Solver}\\[1em]
-\large{Nov 22, 2015}\\
+\large{July 5, 2016}\\
 Michael Dunphy
 \end{center}
 
 \section{Introduction}
-DJLES is a MATLAB package that finds a mode-one solution to the DJL equation. \cite{StastnaLamb2002} describe the problem setup, weakly nonlinear theory, fully nonlinear theory, and iterative solution procedure. DJLES was inspired by \verb+soliw+, a DJL solving C package resulting from the work of \cite{StastnaLamb2002}.
+DJLES is a MATLAB package that finds a mode-one solution to the DJL equation. \cite{StastnaLamb2002} describe the problem setup, weakly nonlinear theory, fully nonlinear theory, and iterative solution procedure. DJLES was inspired by \verb+soliw+, a DJL solving C package resulting from the work of~\cite{StastnaLamb2002}.
 
-DJLES differs from \verb+soliw+ by being MATLAB based, which avoids the need to compile C code and import the resulting raw binary files into MATLAB. It also takes advantage of MATLAB's built in parallelisation of FFTs which accelerates solution on multi-core computers. Lastly, it easily employs the resolution refinement approach of \cite{DunphySubichStastna2011}, a feature not available in \verb+soliw+
+DJLES differs from \verb+soliw+ by being MATLAB based, which avoids the need to compile C code and import the resulting raw binary files into MATLAB. It also takes advantage of MATLAB's built in parallelisation of FFTs which accelerates solution on multi-core computers. Lastly, it easily employs the resolution refinement approach of~\cite{DunphySubichStastna2011}, a feature not available in \verb+soliw+.
 
-If you find this code useful, please cite \cite{DunphySubichStastna2011} as it will encourage the author to maintain/improve DJLES. Bug reports, fixes/improvements and additional case files are welcome; please contact \href{mailto:mdunphy@uwaterloo.ca}{mdunphy@uwaterloo.ca} for inclusion in a future version.
+If you find this code useful, please cite~\cite{DunphySubichStastna2011} as it will encourage the author to maintain/improve DJLES. Bug reports, fixes/improvements and additional case files are welcome; please contact \href{mailto:mdunphy@uwaterloo.ca}{mdunphy@uwaterloo.ca} for inclusion in a future version.
 
 DJLES has benefited from contributions from Marek Stastna, Kevin Lamb, Chris Subich, Derek Steinmoeller, Jorge Magalh\~aes and Jos\'e da Silva.
 
@@ -58,7 +60,7 @@ There are a few tuning knobs. Set them in the case file to override the default.
 \begin{itemize}
  \item \verb+min_iterate+ specifies the minimum number of iterations that the solver will take, default is 10.
  \item \verb+max_iterate+ specifies the maximum number of iterations that the solver will take, default is 2000. If you use a very small \verb+epsilon+ or \verb+relax+ you may need to increase this. 
- \item \verb+NL+ is the number of Legendre points to use for the Gauss quadrature used for the APE integral. Values below 5 are probably too small, values in 15-25 are quite good, and values higher than 25 are likely unnecessary. Default is 20.
+ \item \verb+NL+ is the number of Legendre points to use for the Gauss quadrature used for the APE integral. Values below 5 are probably too small, values in 15--25 are quite good, and values higher than 25 are likely unnecessary. Default is 20.
  \item \verb+relax+ is the underrelaxation factor, $0 < \verb+relax+ <= 1$.
         The value is the fraction of the new iteration, $\eta^{k*}$ to retain
         after performing an iteration, that is,
@@ -93,13 +95,13 @@ If the solver fails to converge,
 \subsection{Numerical Grid}
 The domain is the rectangular region $[0,L] \times [-H,0]$ and is discretized into $N_x\times N_z$ grid boxes. The boundary conditions for the problem are zero, and we use the cell centres for the coordinates, that is,
 \begin{align}
-x_i^c &= \frac{\Delta x}{2}  + i \Delta x, \quad i \in 0,1,2,\hdots,N_x-1,\\
-z_j^c &= -H + \frac{\Delta z}{2}  + j \Delta z, \quad j  \in 0,1,2,\hdots,N_z-1,
+x_i^c &= \frac{\Delta x}{2}  + i \Delta x, \quad i \in 0,1,2,\ldots,N_x-1,\\
+z_j^c &= -H + \frac{\Delta z}{2}  + j \Delta z, \quad j  \in 0,1,2,\ldots,N_z-1,
 \end{align}
 where $(\Delta x, \Delta z) = (L/N_x, H/N_z)$. The grid shifting routine \verb+djles_shift_grid.m+ shifts the data from the cell centres to cell edges, 
 \begin{align}
-x_i^e &= i \Delta x, \quad i \in 0,1,2,...,N_x\\
-z_j^e &= -H + j \Delta z, \quad j  \in 0,1,2,...,N_z.
+x_i^e &= i \Delta x, \quad i \in 0,1,2,\ldots,N_x\\
+z_j^e &= -H + j \Delta z, \quad j  \in 0,1,2,\ldots,N_z.
 \end{align}
 The array sizes are $N_x+1 \times N_z+1$ on the cell edges grid.
 
@@ -144,7 +146,7 @@ Included are seven test cases that demonstrate how to use DJLES. A brief descrip
 Test case: \verb"case_small_ape.m" \\\\
 This test case demonstrates the parameter regime of no background current, a smooth pycnocline, and small wave APE.
 The initial guess obtained from weakly nonlinear theory will be ``close'' to the fully nonlinear DJL solution, so the solver readily converges.
-Once we find the low resolution wave (32x32), we increase the resolution to 512x256 and iterate to convergence.
+Once we find the low resolution wave (32$\times$32), we increase the resolution to 512$\times$256 and iterate to convergence.
 The low resolution solution is a very good initial guess for the high resolution problem, so the high resolution wave is also readily solved.
 
 \subsubsection{Large APE}
@@ -182,7 +184,7 @@ As in \verb"case_ubg.m", we raise the background velocity in four successive ste
 
 \subsubsection{Real Data}
 Test case: \verb"case_realdata.m" \&  \verb"case_realdata.txt" \\\\
-Here we use time-averaged temperature profile data collected from Lake Erie (K. Lamb 2014, pers. comm.). 
+Here we use time-averaged temperature profile data collected from Lake Erie (K.~Lamb 2014, pers.~comm.).
 The text file contains two columns, depth (m) and temperature (\textdegree C), and we convert the temperature to density with a linear equation of state.
 There is no surface value so we extrapolate to find a value for $z=0$.
 We construct the density and density gradient in the same fashion as in the synthetic data case, and use no background current.
@@ -190,19 +192,19 @@ We solve the wave at low resolution and then raise the resolution in two steps.
 
 \subsubsection{Pineda et al. (2015)}
 Test case: \verb"case_pineda.m" \&  \verb"case_pineda_cast1.txt" \\\\
-This case is intended as a typical shallow continental shelf case where we reproduce the DJL solutions shown in \cite{PinedaEtAl2015}.
+This case is intended as a typical shallow continental shelf case where we reproduce the DJL solutions shown in~\cite{PinedaEtAl2015}.
 The text file contains two columns, depth (m) and density (kg/m$^3$), and is an approximate reproduction (courtesy Jorge Magalh\~aes and Jos\'e da Silva) of the smoothed curve of Fig 9a.
 We use the full density and set the reference density \verb+rho0+ as the maximum value, and construct the density and first derivative functions as in the synthetic data case.
 
 The first part of the script finds the wave showcased in Figure 11.
 After raising the target APE in a few steps at low resolution and large epsilon, we apply several steps of resolution refinement with epsilon reductions.
-The relative residual of the final wave is order $4\times 10^{-7}$, and matches \citep{PinedaEtAl2015} to three significant figures in wave height ($-14.1176$ m vs. $-14.1$ m) and two significant figures in phase speed (0.585978 m/s vs. 0.585 m/s).
+The relative residual of the final wave is order $4\times 10^{-7}$, and matches~\cite{PinedaEtAl2015} to three significant figures in wave height ($-14.1176$ m vs. $-14.1$ m) and two significant figures in phase speed (0.585978 m/s vs. 0.585 m/s).
 
 The second part of the script reproduces the solid curves of Figure 10.
 We sweep over a range of target APE values and record the wave height, phase speed, and velocity and pressure one metre above the bottom.
 Each wave is reused as the initial guess for the next APE value as the sweep progresses. 
 
-Lastly, we note there is a difference in amplitude between the pressure reported in \cite{PinedaEtAl2015} and that computed by DJLES (Figures 10c and 11c).
+Lastly, we note there is a difference in amplitude between the pressure reported in~\cite{PinedaEtAl2015} and that computed by DJLES (Figures 10c and 11c).
 We compute residuals by substituting the wave fields into the Boussinesq equations moving with the wave (see bottom part of \verb+djles_pressure.m+), and find that the residuals are appropriately small, which indicates that the pressure computed by DJLES is correct.
 
 % References
