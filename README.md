@@ -4,5 +4,5 @@ DJLES is a MATLAB based software package that solves the Dubreil-Jacotin-Long eq
 
 ## Documentation
 
-A LaTeX user guide is included, see the author's website for a compiled version: https://www.math.uwaterloo.ca/~mdunphy/
+A LaTeX user guide is included, see here for a compiled version: https://www.math.uwaterloo.ca/~mdunphy/djles.pdf
 
