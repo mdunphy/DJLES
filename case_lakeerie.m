@@ -3,7 +3,7 @@ clear all
 %%% Specify the parameters of the problem %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % Load sample data file: two columns, depth and temperature
-data = load('case_realdata.txt'); zdata = data(:,1); T = data(:,2);
+data = load('case_lakeerie.txt'); zdata = data(:,1); T = data(:,2);
 
 % Find a value for z=0 by linear extrapolation
 T = [T(:); interp1(zdata,T,0,'linear','extrap')];
