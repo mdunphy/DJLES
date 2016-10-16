@@ -48,7 +48,7 @@ end
 
 % Add boundary conditions
 phi1=[0; V(:,ii(1)); 0];
-uvec=[0; uvec; 0];
+uvec=[Ubg(-H); uvec; Ubg(0)];
 
 % Compute E1, normalise
 E1=clw*phi1./(clw-uvec);
@@ -60,7 +60,7 @@ bot=sum((clw-uvec).*E1p2);
 r10=(-0.75/clw)*sum((clw-uvec).*(clw-uvec).*E1p3)/bot;
 r01=-0.5*sum((clw-uvec).*(clw-uvec).*E1.*E1)/bot;
 if (verbose)
-    fprintf('WNL gives: c_lw = %f, r10 = %f, r01=%f\n\n',clw, r10, r01);
+    fprintf('WNL gives: c_lw = %f, r10 = %f, r01 = %f\n\n', clw, r10, r01);
 end
 
 % Now optimise the b0, lambda parameters
@@ -69,7 +69,7 @@ b0=sign(r10)*0.05*H;  % Start b0 as 5% of domain height
 lambda = sqrt( -6*r01 / (clw * r10 * b0) );
 c = (1+(2/3)*r10*b0)*clw;
 if (verbose)
-    fprintf('init b0 = %f, lambda = %f, V = %f\n',b0, lambda, c);
+    fprintf('init b0 = %f, lambda = %f, V = %f\n', b0, lambda, c);
 end
 
 flag = 1;
