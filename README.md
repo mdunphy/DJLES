@@ -2,6 +2,10 @@
 
 DJLES is a MATLAB based software package that solves the Dubreil-Jacotin-Long equation, yielding a mode-one internal solitary wave.
 
+## Quick start
+
+Download the code and run one of the case files in either MATLAB or Octave. The case files take less than one minute to run on a recent desktop computer, and upon completion the code will produce a plot of the wave.
+
 ## Documentation
 
 A LaTeX user guide is included, see here for a compiled version: https://www.math.uwaterloo.ca/~mdunphy/djles.pdf

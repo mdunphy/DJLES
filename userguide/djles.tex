@@ -16,20 +16,23 @@
 
 \begin{center}
 \huge{DJLES: Dubreil-Jacotin-Long Equation Solver}\\[1em]
-\large{July 11, 2016}\\
+\large{Feb 1, 2017}\\
 Michael Dunphy
 \end{center}
 
 \section{Introduction}
-DJLES is a MATLAB package that finds a mode-one solution to the DJL equation. \cite{StastnaLamb2002} describe the problem setup, weakly nonlinear theory, fully nonlinear theory, and iterative solution procedure. DJLES was inspired by \verb+soliw+, a DJL solving C package resulting from the work of~\cite{StastnaLamb2002}.
+DJLES is a MATLAB/Octave package that finds a mode-one solution to the DJL equation. \cite{StastnaLamb2002} describe the problem setup, weakly nonlinear theory, fully nonlinear theory, and iterative solution procedure. DJLES was inspired by \verb+soliw+, a DJL solving C package resulting from the work of~\cite{StastnaLamb2002}.
 
-DJLES differs from \verb+soliw+ by being MATLAB based, which avoids the need to compile C code and import the resulting raw binary files into MATLAB. It also takes advantage of MATLAB's built in parallelisation of FFTs which accelerates solution on multi-core computers. Lastly, it easily employs the resolution refinement approach of~\cite{DunphySubichStastna2011}, a feature not available in \verb+soliw+.
+DJLES differs from \verb+soliw+ by being MATLAB based, which avoids the need to compile C code and manage the resulting raw binary files. When used with MATLAB, it also takes advantage of the built in parallelisation of FFTs which accelerates solution on multi-core computers. Lastly, it easily employs the resolution refinement approach of~\cite{DunphySubichStastna2011}, a feature not available in \verb+soliw+.
 
 If you find this code useful, please cite~\cite{DunphySubichStastna2011} as it will encourage the author to maintain/improve DJLES. Bug reports, fixes/improvements and additional case files are welcome; please contact \href{mailto:mdunphy@uwaterloo.ca}{mdunphy@uwaterloo.ca} for inclusion in a future version.
 
 DJLES has benefited from contributions from Marek Stastna, Kevin Lamb, Chris Subich, Derek Steinmoeller, Jorge Magalh\~aes and Jos\'e da Silva.
 
 The remainder of this document is a user guide for the code.
+
+\section{Quickstart}
+Download the code and run one of the case files in either MATLAB or Octave. The case files take less than one minute to run on a recent desktop computer, and may need 2-3 minutes on an older system. Upon completion the code will produce a plot of the wave.
 
 \section{Usage}
 Typical usage is to set problem parameters, then call \verb+djles_refine_solution+ to solve the DJL equation, which returns the isopycnal displacement field $\eta$ and wave speed $c$ in MATLAB variables \verb+eta+ and \verb+c+, respectively. The required problem parameters are:
@@ -130,13 +133,15 @@ The helper functions are
 djles_change_resolution.m - Changes the resolution of the solution.
 djles_compute_apedens.m   - Computes the available potential energy density.
 djles_diffmatrix.m        - Generates a finite difference differentiation matrix for use
-                            in differentiating data.
+                            in the initial guess procedure.
 djles_extend.m            - Extends the input data using specified symmetry.
 djles_gradient.m          - Computes the gradient of input data.
+djles_quadweights.m       - Returns the 1-dimensional interior grid quadrature weights.
 djles_residual.m          - Computes the residual in the DJL equation.
 djles_shift_grid.m        - Shifts the input data from cell centres to cell endpoints.
 djles_sinequadrature.m    - Computes the interior grid sine quadrature weights for
                             area integrals.
+djles_quadweights.m       - Computes an estimate of the wavelength.
 \end{verbatim}
 
 \subsection{Test cases}
