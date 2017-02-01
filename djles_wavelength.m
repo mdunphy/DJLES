@@ -6,7 +6,7 @@ function [wavelength] = djles_wavelength(eta,L)
 [maxeta, idx] = max(abs(eta(:)));
 [iz, ~] = ind2sub(size(eta),idx);
 etaL = abs(eta(iz,:));
-[~,NX] = size(f);
+[~,NX] = size(eta);
 w = djles_quadweights(NX)*(L/pi);
 Lw = sum(w.*etaL) / maxeta;
 % We take wavelength as twice Lw
