@@ -43,6 +43,9 @@ vorticity = uz - wx;
 density = rho(Z-eta);
 ri = N2(Z-eta)./(uz.*uz);
 
+% Wavelength (currently works only on interior grid)
+wavelength = djles_wavelength(eta,L);
+
 % Residual in DJL equation
 [residual, LHS, RHS] = djles_residual(ks, ms, eta, Ubg, Ubgz, N2, Z, c, targetgrid);
 fprintf('Relative residual %e\n',max(abs(residual(:))) / max(abs(LHS(:))));
