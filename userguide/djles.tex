@@ -89,8 +89,8 @@ If the solver fails to converge,
 
 \subsection{Compatibility notes}
 \begin{itemize}
- \item Works with MATLAB versions: R2013a (Linux 64-bit and Windows), R2012a (OSX 10.6.8)
- \item Works with Octave v3.8.1 and v4.0.1 (Linux 64-bit).
+ \item Tested with MATLAB R2013a (Linux 64-bit and Windows), R2012a (OSX 10.6.8).
+ \item Tested with Octave v3.8.1, v4.0.1 and v4.4.1 (Linux 64-bit).
  \item The initial guess part uses \verb+polyeig.m+, and Octave added it in v3.8.0, so it's unlikely to work with Octave older than v3.8.0.
  \item MATLAB R2014a prints warnings about deprecating \verb+ppval+, you can suppress the warnings with \\ \verb+warning('off','MATLAB:interp1:ppGriddedInterpolant');+
 \end{itemize}
@@ -166,10 +166,9 @@ The result is a broad flat crested wave.
 
 \subsubsection{Background current}
 Test case: \verb"case_ubg.m" \\\\
-The weakly nonlinear theory does not include a background current, and thus produces a mediocre initial guess.
-However, the same successive solution strategy is useful here.
-We solve without a background current first, and then successively raise the background current strength until we reach the full background current.
-We increase epsilon for the intermediate solutions to accelerate the process as we only need them to be of ``initial guess'' precision.
+We use the same successive solution strategy here by solving without a background current first,
+and then raise the background current strength in increments until we reach the full background current.
+We increase epsilon for the intermediate solutions to accelerate the process as we only need them to be of ``initial guess'' quality.
 Lastly, we reduce epsilon, and increase the resolution in two increments.
 
 \subsubsection{Sharp pycnocline}
@@ -219,7 +218,7 @@ The included text file contains three columns: depth (m), density (kg/m$^3$) and
 
 The density profile has inversions, so we make ad-hoc adjustments to ensure that the first derivative is always negative (and thus $N^2(z)$ is always positive).
 Much like the other cases, we start with a small amplitude at low resolution, and incrementally raise the values until we reach a high resolution wave of 35.3 m amplitude.
-This wave is near its amplitude limit; further increases to the APE will expand the wave as a broad flat crested wave and a larger domain is needed to find such waves.
+This wave is near its amplitude limit; further increases to the APE will expand the wave as a broad flat crested wave and a larger domain is needed to calculate such a wave.
 
 % References
 \bibliographystyle{kbib}
