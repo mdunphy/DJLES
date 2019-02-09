@@ -3,11 +3,11 @@ clear all
 %%% Specify the parameters of the problem %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % Load sample data file: two columns, depth and temperature
-data = load('case_lakeerie.txt'); zdata = data(:,1); T = data(:,2);
+data = load('case_lakeerie.txt');
 
-% Find a value for z=0 by linear extrapolation
-T = [T(:); interp1(zdata,T,0,'linear','extrap')];
-zdata = [zdata(:); 0];
+% Interpolate data to regular grid and extrapolate for surface value
+zdata = -16.5:0.5:0
+T = interp1(data(:,1),data(:,2),zdata,'linear','extrap')
 
 % Convert to density with linear EOS (note: full density)
 rho0=1000; T0=10; alpha=1.7e-4;
