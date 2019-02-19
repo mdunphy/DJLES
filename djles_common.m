@@ -33,7 +33,7 @@ if ~exist('verbose','var'), verbose=1; end
 % successive iterations differs by less than epsilon
 if ~exist('epsilon','var'), epsilon=1e-4; end
 
-% If rho0 is not speficied, assume we are using non-dimensional density
+% If rho0 is not specified, assume we are using non-dimensional density
 if ~exist('rho0','var'), rho0=1; end
 
 %%% Generate the grid and wavenumbers %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
