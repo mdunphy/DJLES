@@ -23,7 +23,10 @@ u = Ubg(Z-eta).*(1-etaz) + c*etaz;
 w = -Ubg(Z-eta).*(-etax) - c*etax;
 uwave = u - Ubg(Z);
 
-% Wave kinteic energy density (m^2/s^2)
+% Kinetic energy perturbation (m^2/s^2) - first and second order terms
+kepert = Ubg(Z).*uwave + 0.5*(uwave.^2 + w.^2);
+
+% Wave kinteic energy density (m^2/s^2) - second order terms only
 kewave = 0.5*(uwave.^2 + w.^2);
 %[kewavex, kewavez] = djles_gradient(kewave, ks, ms, 'even', targetgrid);
 
