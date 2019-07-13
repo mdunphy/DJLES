@@ -8,5 +8,5 @@ Download the code and run one of the case files in either MATLAB or Octave. The 
 
 ## Documentation
 
-A LaTeX user guide is included, see here for a compiled version: https://www.math.uwaterloo.ca/~mdunphy/djles.pdf
+A LaTeX user guide is included, a compiled version is available [here](https://www.math.uwaterloo.ca/~mdunphy/djles.pdf) ([mirror](https://palang.ca/DJLES/djles.pdf)).
 
